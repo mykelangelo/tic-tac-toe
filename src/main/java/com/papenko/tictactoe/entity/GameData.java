@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @AllArgsConstructor
 @Document(indexName = "game")
 public class GameData {
-    private GameId id;
+    private String id;
     private CellState c00, c01, c02;
     private CellState c10, c11, c12;
     private CellState c20, c21, c22;
@@ -19,7 +19,7 @@ public class GameData {
     private Integer fromY;
 
     public GameData(Long chatId, Long messageId) {
-        id = new GameId(chatId, messageId);
+        id = createId(chatId, messageId);
 
         c00 = CellState.EMPTY;
         c01 = CellState.EMPTY;
@@ -34,11 +34,14 @@ public class GameData {
         c22 = CellState.EMPTY;
     }
 
+    public static String createId(Long chatId, Long messageId) {
+        return chatId + "|" + messageId;
+    }
+
     @Override
     public String toString() {
         return "{" +
-                "chatId=" + id.getChatId() +
-                ", messageId=" + id.getMessageId() +
+                "id=" + id +
                 '\n' + c00 +
                 '|' + c01 +
                 '|' + c02 +

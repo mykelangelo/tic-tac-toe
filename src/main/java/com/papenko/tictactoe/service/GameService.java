@@ -2,7 +2,6 @@ package com.papenko.tictactoe.service;
 
 import com.papenko.tictactoe.entity.CellState;
 import com.papenko.tictactoe.entity.GameData;
-import com.papenko.tictactoe.entity.GameId;
 import com.papenko.tictactoe.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +14,12 @@ public class GameService {
     private final GameRepository repository;
 
     public GameData fetchGameData(long chatId, long messageId) {
-        return repository.findById(new GameId(chatId, messageId))
+        return repository.findById(GameData.createId(chatId, messageId))
                 .orElse(repository.save(new GameData(chatId, messageId)));
     }
 
     public static boolean isFree(GameData gameData, Integer x, Integer y) {
-        return gameData.getCellByCoordinates(x, y).equals(CellState.EMPTY);
+        return gameData.getCellByCoordinates(x, y) == CellState.EMPTY;
     }
 
     private boolean eat(GameData gameData, Integer x, Integer y) {
