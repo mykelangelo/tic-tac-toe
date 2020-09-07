@@ -35,7 +35,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             // Set variables
             String messageText = update.getMessage().getText();
-            long messageId = update.getCallbackQuery().getMessage().getMessageId();
+            long messageId = update.getMessage().getMessageId();
             long chatId = update.getMessage().getChatId();
             if ("/start".equals(messageText)) {
                 GameData gameData = service.fetchGameData(chatId, messageId);
