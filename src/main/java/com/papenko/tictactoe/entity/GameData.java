@@ -38,7 +38,7 @@ public class GameData {
     public String toString() {
         return "{" +
                 "chatId=" + id.getChatId() +
-                ", gameCounter=" + id.getMessageId() +
+                ", messageId=" + id.getMessageId() +
                 '\n' + c00 +
                 '|' + c01 +
                 '|' + c02 +
