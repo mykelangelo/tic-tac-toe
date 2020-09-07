@@ -1,6 +1,5 @@
 package com.papenko.tictactoe;
 
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -9,7 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-@NoArgsConstructor
 public class SandoxBot extends TelegramLongPollingBot {
     private String botToken;
 
