@@ -33,7 +33,6 @@ public class SandoxBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            // Set variables
             String messageText = update.getMessage().getText();
             long messageId = update.getMessage().getMessageId();
             long chatId = update.getMessage().getChatId();
@@ -51,30 +50,33 @@ public class SandoxBot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            } else if (update.hasCallbackQuery()) {
-                String callData = update.getCallbackQuery().getData();
-                if (callData.startsWith("c")) {
-                    var x = Integer.valueOf(callData.substring(1, 2));
-                    var y = Integer.valueOf(callData.substring(2, 3));
-                    GameData gameData = service.fetchGameData(chatId, messageId);
+            }
+        } else if (update.hasCallbackQuery()) {
+            String messageText = update.getCallbackQuery().getMessage().getText();
+            long messageId = update.getCallbackQuery().getMessage().getMessageId();
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+            String callData = update.getCallbackQuery().getData();
+            if (callData.startsWith("c")) {
+                var x = Integer.valueOf(callData.substring(1, 2));
+                var y = Integer.valueOf(callData.substring(2, 3));
+                GameData gameData = service.fetchGameData(chatId, messageId);
 
-                    var state = messageText.startsWith("X") ? CellState.X : CellState.O;
-                    service.makeMove(state, x, y, gameData);
+                var state = messageText.startsWith("X") ? CellState.X : CellState.O;
+                service.makeMove(state, x, y, gameData);
 
-                    if (!gameData.isMoveInProgress()) {
-                        var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+                if (!gameData.isMoveInProgress()) {
+                    var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
 
-                        EditMessageText message = new EditMessageText()
-                                .setChatId(chatId)
-                                .setMessageId(toIntExact(messageId))
-                                .setText(swapMessage(messageText))
-                                .setReplyMarkup(markup);
+                    EditMessageText message = new EditMessageText()
+                            .setChatId(chatId)
+                            .setMessageId(toIntExact(messageId))
+                            .setText(swapMessage(messageText))
+                            .setReplyMarkup(markup);
 
-                        try {
-                            execute(message);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        execute(message);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
                     }
                 }
             }
