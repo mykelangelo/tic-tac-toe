@@ -1,5 +1,6 @@
 package com.papenko.tictactoe;
 
+import com.papenko.tictactoe.service.GameService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,13 +17,12 @@ public class TicTacToeApplication {
 
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 
+        var context = SpringApplication.run(TicTacToeApplication.class, args);
+
         try {
-            telegramBotsApi.registerBot(new SandoxBot(System.getenv("BOT_TOKEN"), null));
+            telegramBotsApi.registerBot(new SandoxBot(System.getenv("BOT_TOKEN"), context.getBean(GameService.class)));
         } catch (TelegramApiException e) {
             log.error("Something went wrong during bot registration", e);
         }
-
-        SpringApplication.run(TicTacToeApplication.class, args);
     }
-
 }
