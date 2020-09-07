@@ -5,8 +5,10 @@ import com.papenko.tictactoe.entity.GameData;
 import com.papenko.tictactoe.entity.GameId;
 import com.papenko.tictactoe.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -38,6 +40,7 @@ public class GameService {
     }
 
     public void makeMove(CellState state, Integer x, Integer y, GameData gameData) {
+        log.info("field: {}, state: {}, x: {}, y: {}", gameData, state, x, y);
         if (gameData.isMoveInProgress()) {
             if (eat(gameData, x, y)) {
                 gameData.setMoveInProgress(false);
