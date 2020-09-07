@@ -3,6 +3,7 @@ package com.papenko.tictactoe.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 @Data
@@ -10,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @AllArgsConstructor
 @Document(indexName = "game")
 public class GameData {
+    @Id
     private String id;
     private CellState c00, c01, c02;
     private CellState c10, c11, c12;
