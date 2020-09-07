@@ -1,7 +1,7 @@
 package com.papenko.tictactoe.entity;
 
 public enum CellState {
-    EMPTY("□"), X("X"), O("O");
+    EMPTY("⬜"), X("❌"), O("⭕");
 
     private String stringRepresentation;
 

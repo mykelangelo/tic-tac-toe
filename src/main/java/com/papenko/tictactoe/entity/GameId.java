@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class GameId {
-    Integer chatId;
-    Integer gameCounter;
+    Long chatId;
+    Long messageId;
 }

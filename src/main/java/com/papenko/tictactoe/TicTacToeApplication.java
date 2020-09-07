@@ -17,7 +17,7 @@ public class TicTacToeApplication {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 
         try {
-            telegramBotsApi.registerBot(new SandoxBot(System.getenv("BOT_TOKEN")));
+            telegramBotsApi.registerBot(new SandoxBot(System.getenv("BOT_TOKEN"), null));
         } catch (TelegramApiException e) {
             log.error("Something went wrong during bot registration", e);
         }

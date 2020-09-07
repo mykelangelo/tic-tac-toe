@@ -3,39 +3,42 @@ package com.papenko.tictactoe.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import static com.papenko.tictactoe.entity.CellState.EMPTY;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(indexName = "game")
 public class GameData {
     private GameId id;
-    private Cell c00, c01, c02;
-    private Cell c10, c11, c12;
-    private Cell c20, c21, c22;
+    private CellState c00, c01, c02;
+    private CellState c10, c11, c12;
+    private CellState c20, c21, c22;
+    private boolean moveInProgress;
+    private Integer fromX;
+    private Integer fromY;
 
-    public GameData(Integer chatId, Integer gameCounter) {
-        id = new GameId(chatId, gameCounter);
+    public GameData(Long chatId, Long messageId) {
+        id = new GameId(chatId, messageId);
 
-        c00 = new Cell(EMPTY, CellCoordinates.C_00);
-        c01 = new Cell(EMPTY, CellCoordinates.C_01);
-        c02 = new Cell(EMPTY, CellCoordinates.C_02);
+        c00 = CellState.EMPTY;
+        c01 = CellState.EMPTY;
+        c02 = CellState.EMPTY;
 
-        c10 = new Cell(EMPTY, CellCoordinates.C_10);
-        c11 = new Cell(EMPTY, CellCoordinates.C_11);
-        c12 = new Cell(EMPTY, CellCoordinates.C_12);
+        c10 = CellState.EMPTY;
+        c11 = CellState.EMPTY;
+        c12 = CellState.EMPTY;
 
-        c20 = new Cell(EMPTY, CellCoordinates.C_20);
-        c21 = new Cell(EMPTY, CellCoordinates.C_21);
-        c22 = new Cell(EMPTY, CellCoordinates.C_22);
+        c20 = CellState.EMPTY;
+        c21 = CellState.EMPTY;
+        c22 = CellState.EMPTY;
     }
 
     @Override
     public String toString() {
         return "{" +
                 "chatId=" + id.getChatId() +
-                ", gameCounter=" + id.getGameCounter() +
+                ", gameCounter=" + id.getMessageId() +
                 '\n' + c00 +
                 '|' + c01 +
                 '|' + c02 +
@@ -46,5 +49,92 @@ public class GameData {
                 '|' + c21 +
                 '|' + c22 +
                 "\n}";
+    }
+
+    public CellState getCellByCoordinates(Integer x, Integer y) {
+        if (x == 0) {
+            switch (y) {
+                case 0:
+                    return c00;
+                case 1:
+                    return c01;
+                case 2:
+                    return c02;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (x == 1) {
+            switch (y) {
+                case 0:
+                    return c10;
+                case 1:
+                    return c11;
+                case 2:
+                    return c12;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (x == 2) {
+            switch (y) {
+                case 0:
+                    return c20;
+                case 1:
+                    return c21;
+                case 2:
+                    return c22;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else {
+            throw new IllegalArgumentException("x:" + x);
+        }
+    }
+
+    public void setCellByCoordinates(Integer x, Integer y, CellState state) {
+        if (x == 0) {
+            switch (y) {
+                case 0:
+                    c00 = state;
+                    return;
+                case 1:
+                    c01 = state;
+                    return;
+                case 2:
+                    c02 = state;
+                    return;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (x == 1) {
+            switch (y) {
+                case 0:
+                    c10 = state;
+                    return;
+                case 1:
+                    c11 = state;
+                    return;
+                case 2:
+                    c12 = state;
+                    return;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (x == 2) {
+            switch (y) {
+                case 0:
+                    c20 = state;
+                    return;
+                case 1:
+                    c21 = state;
+                    return;
+                case 2:
+                    c22 = state;
+                    return;
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else {
+            throw new IllegalArgumentException("x:" + x);
+        }
     }
 }
