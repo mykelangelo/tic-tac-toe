@@ -1,20 +1,15 @@
 package com.papenko.tictactoe.entity;
 
-import com.papenko.tictactoe.dto.GameDataDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import static com.papenko.tictactoe.entity.CellState.*;
+import static com.papenko.tictactoe.entity.CellState.EMPTY;
 
 @Data
-@Document("game")
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameData {
-    @Id
     private GameId id;
     private Cell c00, c01, c02;
     private Cell c10, c11, c12;
@@ -51,9 +46,5 @@ public class GameData {
                 '|' + c21 +
                 '|' + c22 +
                 "\n}";
-    }
-
-    public GameDataDto toDto() {
-        return new GameDataDto(id.getChatId(), id.getGameCounter(), c00, c01, c02, c10, c11, c12, c20, c21, c22);
     }
 }
