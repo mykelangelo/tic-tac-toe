@@ -78,25 +78,35 @@ public class GameService {
         if (data.getC00() != CellState.EMPTY) {
             if ((data.getC00() == data.getC01() && data.getC00() == data.getC02()) ||
                     (data.getC00() == data.getC10() && data.getC00() == data.getC20())) {
-                return data.getC11() == data.getC00() || data.getC11() == CellState.EMPTY;
+                if (data.getC11() == data.getC00() || data.getC11() == CellState.EMPTY) {
+                    return true;
+                }
             }
         }
         if (data.getC22() != CellState.EMPTY) {
             if ((data.getC22() == data.getC20() && data.getC21() == data.getC22()) ||
                     (data.getC22() == data.getC02() && data.getC22() == data.getC12())) {
-                return data.getC11() == data.getC22() || data.getC11() == CellState.EMPTY;
+                if (data.getC11() == data.getC22() || data.getC11() == CellState.EMPTY) {
+                    return true;
+                }
             }
         }
         if (data.getC11() != CellState.EMPTY) {
             if ((data.getC00() == data.getC11() && data.getC22() == data.getC11()) ||
                     (data.getC11() == data.getC02() && data.getC20() == data.getC11())) {
-                return !(data.getC01() != data.getC11() || data.getC10() != data.getC11() ||
-                        data.getC21() != data.getC11() || data.getC12() != data.getC11());
+                if ((data.getC01() == CellState.EMPTY && data.getC10() == CellState.EMPTY &&
+                        data.getC21() == CellState.EMPTY && data.getC12() == CellState.EMPTY) ||
+                        !(data.getC01() != data.getC11() || data.getC10() != data.getC11() ||
+                                data.getC21() != data.getC11() || data.getC12() != data.getC11())) {
+                    return true;
+                }
             }
             if ((data.getC01() == data.getC11() && data.getC11() == data.getC21()) ||
                     (data.getC10() == data.getC11() && data.getC11() == data.getC12())) {
-                return !(data.getC00() != data.getC11() || data.getC20() != data.getC11() ||
-                        data.getC22() != data.getC11() || data.getC02() != data.getC11());
+                if (!(data.getC00() != data.getC11() || data.getC20() != data.getC11() ||
+                        data.getC22() != data.getC11() || data.getC02() != data.getC11())) {
+                    return true;
+                }
             }
         }
         return false;

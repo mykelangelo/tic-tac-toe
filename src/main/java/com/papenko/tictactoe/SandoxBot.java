@@ -109,7 +109,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     if (service.makeMove(x, y, gameData)) {
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText(gameData.getCurrentState() + " won!");
+                                .setText(swapState(gameData.getCurrentState()) + " won!");
 
                         try {
                             execute(message);
@@ -147,7 +147,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var message = new EditMessageText()
                             .setChatId(chatId)
                             .setMessageId(toIntExact(messageId))
-                            .setText(gameData.getCurrentState() + " won!");
+                            .setText(swapState(gameData.getCurrentState()) + " won!");
 
                     try {
                         execute(message);
@@ -177,6 +177,9 @@ public class SandoxBot extends TelegramLongPollingBot {
 
     private String swapMessage(CellState cellState) {
         return cellState == CellState.O ? O_S_TURN : X_S_TURN;
+    }
+    private String swapState(CellState cellState) {
+        return cellState == CellState.O ? CellState.X.toString() : CellState.O.toString();
     }
 
     private List<List<InlineKeyboardButton>> getGameField(GameData gameData) {
