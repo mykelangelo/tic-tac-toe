@@ -68,6 +68,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
+        log.info("first user: {}", inlineQuery.getFrom());
         service.addFirstUser(gameData, inlineQuery.getFrom());
 
         return List.of(article0, article1);
