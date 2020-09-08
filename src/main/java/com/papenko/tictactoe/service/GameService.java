@@ -24,11 +24,13 @@ public class GameService {
 
     private boolean eat(GameData gameData, Integer x, Integer y, CellState state) {
         CellState from = gameData.getCellByCoordinates(gameData.getFromX(), gameData.getFromY());
+        if (from != state) {
+            log.info("starting state is not {}", state);
+            gameData.setMoveInProgress(false);
+            return false;
+        }
         if (from == gameData.getCellByCoordinates(x, y)) {
             log.info("cannot eat the piece of the same type {}", from);
-            return false;
-        } else if (from != state) {
-            log.info("starting state is not {}", state);
             return false;
         }
         gameData.setCellByCoordinates(gameData.getFromX(), gameData.getFromY(), CellState.EMPTY);
@@ -47,18 +49,18 @@ public class GameService {
             if (eat(gameData, x, y, state)) {
                 log.info("move has finished!");
                 gameData.setMoveInProgress(false);
+                return;
             }
+        }
+        log.info("about to start new move");
+        gameData.setMoveInProgress(!GameService.isFree(gameData, x, y));
+        if (gameData.isMoveInProgress()) {
+            log.info("started a new move!");
+            gameData.setFromX(x);
+            gameData.setFromY(y);
         } else {
-            log.info("about to start new move");
-            gameData.setMoveInProgress(!GameService.isFree(gameData, x, y));
-            if (gameData.isMoveInProgress()) {
-                log.info("started a new move!");
-                gameData.setFromX(x);
-                gameData.setFromY(y);
-            } else {
-                log.info("put a new piece");
-                put(gameData, x, y, state);
-            }
+            log.info("put a new piece");
+            put(gameData, x, y, state);
         }
         repository.save(gameData);
     }
