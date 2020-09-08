@@ -5,20 +5,20 @@ import com.papenko.tictactoe.entity.GameData;
 import com.papenko.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 
 import static java.lang.Math.toIntExact;
 
 @Component
-public class SandoxBot extends TelegramWebhookBot {
+public class SandoxBot extends TelegramLongPollingBot {
     private static final String O_S_TURN = "O's turn";
     private static final String X_S_TURN = "X's turn";
     private String botToken;
@@ -31,7 +31,7 @@ public class SandoxBot extends TelegramWebhookBot {
     }
 
     @Override
-    public BotApiMethod onWebhookUpdateReceived(Update update) {
+    public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             long messageId = update.getMessage().getMessageId();
@@ -40,10 +40,16 @@ public class SandoxBot extends TelegramWebhookBot {
                 GameData gameData = service.fetchGameData(chatId, messageId);
                 var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
 
-                return new SendMessage() // Create a message object object
+                var message = new SendMessage()
                         .setChatId(chatId)
                         .setText(X_S_TURN + '(' + update.getMessage().getChat().getFirstName() + ')')
                         .setReplyMarkup(markup);
+
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (update.hasCallbackQuery()) {
             String messageText = update.getCallbackQuery().getMessage().getText();
@@ -61,15 +67,20 @@ public class SandoxBot extends TelegramWebhookBot {
                 if (!gameData.isMoveInProgress()) {
                     var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
 
-                    return new EditMessageText()
+                    var message = new EditMessageText()
                             .setChatId(chatId)
                             .setMessageId(toIntExact(messageId))
                             .setText(swapMessage(messageText))
                             .setReplyMarkup(markup);
+
+                    try {
+                        execute(message);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-        return null;
     }
 
     private String swapMessage(String messageText) {
@@ -100,10 +111,5 @@ public class SandoxBot extends TelegramWebhookBot {
     @Override
     public String getBotToken() {
         return botToken;
-    }
-
-    @Override
-    public String getBotPath() {
-        return "callback/Webhook";
     }
 }
