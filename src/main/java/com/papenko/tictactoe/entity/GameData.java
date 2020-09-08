@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,8 @@ public class GameData {
     private Integer fromX;
     private Integer fromY;
     private CellState currentState;
+    private User firstUser;
+    private User secondUser;
 
     public GameData(String id) {
         this.id = id;

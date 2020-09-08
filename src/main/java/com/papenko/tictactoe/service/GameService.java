@@ -6,6 +6,7 @@ import com.papenko.tictactoe.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 @Slf4j
 @Service
@@ -98,7 +99,11 @@ public class GameService {
                 gameData.setMoveInProgress(false);
                 alterCurrentState(gameData);
                 repository.save(gameData);
-                return isGameFinished(gameData);
+                final boolean gameFinished = isGameFinished(gameData);
+                if (gameFinished) {
+                    repository.delete(gameData);
+                }
+                return gameFinished;
             }
         }
         log.info("about to start new move");
@@ -113,7 +118,11 @@ public class GameService {
             alterCurrentState(gameData);
         }
         repository.save(gameData);
-        return isGameFinished(gameData);
+        final boolean gameFinished = isGameFinished(gameData);
+        if (gameFinished) {
+            repository.delete(gameData);
+        }
+        return gameFinished;
     }
 
     private static boolean isGameFinished(GameData data) {
@@ -156,5 +165,15 @@ public class GameService {
 
     private void alterCurrentState(GameData gameData) {
         gameData.setCurrentState(gameData.getCurrentState() == CellState.X ? CellState.O : CellState.X);
+    }
+
+    public void addFirstUser(GameData gameData, User first) {
+        gameData.setFirstUser(first);
+        repository.save(gameData);
+    }
+
+    public void addSecondUser(GameData gameData, User first) {
+        gameData.setSecondUser(first);
+        repository.save(gameData);
     }
 }

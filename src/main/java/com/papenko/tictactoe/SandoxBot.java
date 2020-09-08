@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -49,9 +50,9 @@ public class SandoxBot extends TelegramLongPollingBot {
         article0.setInputMessageContent(new InputTextMessageContent()
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes first"));
         article0.setId("0");
-        final InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId())));
-        article0.setReplyMarkup(replyMarkup);
+        final GameData gameData = service.fetchGameData(inlineQuery.getId());
+        article0.setReplyMarkup(new InlineKeyboardMarkup()
+                .setKeyboard(getGameField(gameData, "1")));
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -61,11 +62,13 @@ public class SandoxBot extends TelegramLongPollingBot {
         article1.setInputMessageContent(new InputTextMessageContent()
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
-        article1.setReplyMarkup(replyMarkup);
+        article1.setReplyMarkup(new InlineKeyboardMarkup()
+                .setKeyboard(getGameField(gameData, "2")));
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
+        service.addFirstUser(gameData, inlineQuery.getFrom());
 
         return List.of(article0, article1);
     }
@@ -104,8 +107,38 @@ public class SandoxBot extends TelegramLongPollingBot {
                 if (callData.startsWith("c")) {
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
+                    var order = Integer.valueOf(callData.substring(3, 4));
                     GameData gameData = service.fetchGameData(id);
-
+                    if (order == 2) {
+                        if (gameData.getSecondUser() == null) {
+                            if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUser().getId())) {
+                                try {
+                                    log.info("first user attempts to go twice in a row");
+                                    execute(new AnswerCallbackQuery().setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (first user twice in a row)", e);
+                                }
+                                return;
+                            } else {
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                            }
+                        }
+                    } else {
+                        if (gameData.getSecondUser() == null) {
+                            if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUser().getId())) {
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                                try {
+                                    log.info("second user interrupts first move");
+                                    execute(new AnswerCallbackQuery().setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (second user interrupts first move)", e);
+                                }
+                                return;
+                            }
+                        }
+                    }
                     if (service.makeMove(x, y, gameData)) {
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
@@ -194,6 +227,22 @@ public class SandoxBot extends TelegramLongPollingBot {
         var c20 = new InlineKeyboardButton().setText(gameData.getC20().toString()).setCallbackData("c20");
         var c21 = new InlineKeyboardButton().setText(gameData.getC21().toString()).setCallbackData("c21");
         var c22 = new InlineKeyboardButton().setText(gameData.getC22().toString()).setCallbackData("c22");
+
+        return List.of(List.of(c00, c01, c02), List.of(c10, c11, c12), List.of(c20, c21, c22));
+    }
+
+    private List<List<InlineKeyboardButton>> getGameField(GameData gameData, String order) {
+        var c00 = new InlineKeyboardButton().setText(gameData.getC00().toString()).setCallbackData("c00" + order);
+        var c01 = new InlineKeyboardButton().setText(gameData.getC01().toString()).setCallbackData("c01" + order);
+        var c02 = new InlineKeyboardButton().setText(gameData.getC02().toString()).setCallbackData("c02" + order);
+
+        var c10 = new InlineKeyboardButton().setText(gameData.getC10().toString()).setCallbackData("c10" + order);
+        var c11 = new InlineKeyboardButton().setText(gameData.getC11().toString()).setCallbackData("c11" + order);
+        var c12 = new InlineKeyboardButton().setText(gameData.getC12().toString()).setCallbackData("c12" + order);
+
+        var c20 = new InlineKeyboardButton().setText(gameData.getC20().toString()).setCallbackData("c20" + order);
+        var c21 = new InlineKeyboardButton().setText(gameData.getC21().toString()).setCallbackData("c21" + order);
+        var c22 = new InlineKeyboardButton().setText(gameData.getC22().toString()).setCallbackData("c22" + order);
 
         return List.of(List.of(c00, c01, c02), List.of(c10, c11, c12), List.of(c20, c21, c22));
     }
