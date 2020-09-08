@@ -109,12 +109,14 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var y = Integer.valueOf(callData.substring(2, 3));
                     var order = Integer.valueOf(callData.substring(3, 4));
                     GameData gameData = service.fetchGameData(id);
+                    log.info("user {}", update.getCallbackQuery().getFrom());
                     if (order == 2) {
                         if (gameData.getSecondUser() == null) {
                             if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUser().getId())) {
                                 try {
                                     log.info("first user attempts to go twice in a row");
-                                    execute(new AnswerCallbackQuery().setCallbackQueryId(update.getCallbackQuery().getId())
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
                                             .setShowAlert(true).setText("✋"));
                                 } catch (TelegramApiException e) {
                                     log.error("could not execute (first user twice in a row)", e);
@@ -130,7 +132,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
                                 try {
                                     log.info("second user interrupts first move");
-                                    execute(new AnswerCallbackQuery().setCallbackQueryId(update.getCallbackQuery().getId())
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
                                             .setShowAlert(true).setText("✋"));
                                 } catch (TelegramApiException e) {
                                     log.error("could not execute (second user interrupts first move)", e);
