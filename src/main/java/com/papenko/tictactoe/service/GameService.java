@@ -68,8 +68,8 @@ public class GameService {
         } else {
             log.info("put a new piece");
             put(gameData, x, y);
+            alterCurrentState(gameData);
         }
-        alterCurrentState(gameData);
         repository.save(gameData);
         return isGameFinished(gameData);
     }
