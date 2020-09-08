@@ -48,8 +48,9 @@ public class SandoxBot extends TelegramLongPollingBot {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
         article0.setInputMessageContent(new InputTextMessageContent().setMessageText("go1"));
         article0.setId("0");
-        article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId()))));
+        final InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup()
+                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId())));
+        article0.setReplyMarkup(replyMarkup);
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -58,8 +59,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
         article1.setInputMessageContent(new InputTextMessageContent().setMessageText("go2"));
         article1.setId("1");
-        article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId()))));
+        article0.setReplyMarkup(replyMarkup);
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -96,6 +96,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 }
             }
         } else if (update.hasCallbackQuery()) {
+            log.info("callback! {}", update.getCallbackQuery());
             String messageText = update.getCallbackQuery().getMessage().getText();
             long messageId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
