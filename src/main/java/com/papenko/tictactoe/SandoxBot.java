@@ -46,7 +46,7 @@ public class SandoxBot extends TelegramLongPollingBot {
 
     private static List<InlineQueryResult> provideTwoOptions() {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
-        article0.setInputMessageContent(new InputTextMessageContent().setMessageText("0"));
+        article0.setInputMessageContent(new InputTextMessageContent().setMessageText("/start 1"));
         article0.setId("0");
         article0.setTitle("Go first");
         article0.setDescription("Whanna go first? Click me!");
@@ -54,7 +54,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 "92474303-458e1b80-f1e4-11ea-99eb-14b00a8144f6.png");
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
-        article1.setInputMessageContent(new InputTextMessageContent().setMessageText("1"));
+        article1.setInputMessageContent(new InputTextMessageContent().setMessageText("/start 2"));
         article1.setId("1");
         article1.setTitle("Go second");
         article1.setDescription("Whanna go second? Click me!");
