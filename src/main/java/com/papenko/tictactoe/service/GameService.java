@@ -34,13 +34,55 @@ public class GameService {
             log.info("cannot eat the piece of the same type {}", from);
             return false;
         }
-        if (from == CellState.EMPTY || to == CellState.EMPTY) {
-            log.info("one of the cells is empty");
+        if (to == CellState.EMPTY) {
+            log.info("to cell is empty");
+            return false;
+        }
+        if (!isEatMoveAllowed(gameData.getFromX(), gameData.getFromY(), x, y)) {
+            log.info("move is not allowed");
             return false;
         }
         gameData.setCellByCoordinates(gameData.getFromX(), gameData.getFromY(), CellState.EMPTY);
         gameData.setCellByCoordinates(x, y, from);
         return true;
+    }
+
+    private boolean isEatMoveAllowed(Integer fromX, Integer fromY, Integer x, Integer y) {
+        if (fromX == 0) {
+            switch (fromY) {
+                case 0:
+                    return (x == 1 && y == 0) || (y == 1 && x == 0);
+                case 1:
+                    return x == 1 && y == 1;
+                case 2:
+                    return (x == 1 && y == 2) || (y == 1 && x == 0);
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (fromX == 1) {
+            switch (fromY) {
+                case 0:
+                case 2:
+                    return x == 1 && y == 1;
+                case 1:
+                    return (x == 0 && y == 0) || (x == 2 && y == 2) || (x == 0 && y == 2) || (x == 2 && y == 0);
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else if (fromX == 2) {
+            switch (fromY) {
+                case 0:
+                    return (x == 1 && y == 0) || (x == 2 && y == 1);
+                case 1:
+                    return x == 1 && y == 1;
+                case 2:
+                    return (x == 1 && y == 2) || (x == 2 && y == 1);
+                default:
+                    throw new IllegalArgumentException("y:" + y);
+            }
+        } else {
+            throw new IllegalArgumentException("x:" + x);
+        }
     }
 
     private void put(GameData gameData, Integer x, Integer y) {
