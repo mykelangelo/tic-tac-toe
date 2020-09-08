@@ -54,6 +54,7 @@ public class GameService {
             if (eat(gameData, x, y, state)) {
                 log.info("move has finished!");
                 gameData.setMoveInProgress(false);
+                repository.save(gameData);
                 return;
             }
         }
