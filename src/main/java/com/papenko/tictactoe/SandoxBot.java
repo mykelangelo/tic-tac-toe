@@ -104,6 +104,6 @@ public class SandoxBot extends TelegramWebhookBot {
 
     @Override
     public String getBotPath() {
-        return "sandoxbot";
+        return null;
     }
 }
