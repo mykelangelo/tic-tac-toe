@@ -113,6 +113,7 @@ public class SandoxBot extends TelegramLongPollingBot {
 
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
+                                .setText(swapMessage(gameData.getCurrentState()))
                                 .setReplyMarkup(markup);
 
                         try {
