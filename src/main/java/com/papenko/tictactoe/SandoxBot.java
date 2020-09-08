@@ -64,18 +64,20 @@ public class SandoxBot extends TelegramLongPollingBot {
                 var state = messageText.startsWith("X") ? CellState.X : CellState.O;
                 service.makeMove(state, x, y, gameData);
 
-                var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+                if (!gameData.isMoveInProgress()) {
+                    var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
 
-                EditMessageText message = new EditMessageText()
-                        .setChatId(chatId)
-                        .setMessageId(toIntExact(messageId))
-                        .setText(gameData.isMoveInProgress() ? messageText : swapMessage(messageText))
-                        .setReplyMarkup(markup);
+                    EditMessageText message = new EditMessageText()
+                            .setChatId(chatId)
+                            .setMessageId(toIntExact(messageId))
+                            .setText(swapMessage(messageText))
+                            .setReplyMarkup(markup);
 
-                try {
-                    execute(message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    try {
+                        execute(message);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

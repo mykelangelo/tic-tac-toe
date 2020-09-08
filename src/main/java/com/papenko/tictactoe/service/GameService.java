@@ -25,6 +25,7 @@ public class GameService {
     private boolean eat(GameData gameData, Integer x, Integer y) {
         CellState from = gameData.getCellByCoordinates(gameData.getFromX(), gameData.getFromY());
         if (from == gameData.getCellByCoordinates(x, y)) {
+            log.info("cannot eat the piece of the same type {}", from);
             return false;
         }
         gameData.setCellByCoordinates(gameData.getFromX(), gameData.getFromY(), CellState.EMPTY);
@@ -41,15 +42,20 @@ public class GameService {
     public void makeMove(CellState state, Integer x, Integer y, GameData gameData) {
         log.info("field: {}, state: {}, x: {}, y: {}", gameData, state, x, y);
         if (gameData.isMoveInProgress()) {
+            log.info("move was in progress, about to finish it");
             if (eat(gameData, x, y)) {
+                log.info("move has finished!");
                 gameData.setMoveInProgress(false);
             }
         } else {
+            log.info("about to start new move");
             gameData.setMoveInProgress(!GameService.isFree(gameData, x, y));
             if (gameData.isMoveInProgress()) {
+                log.info("started a new move!");
                 gameData.setFromX(x);
                 gameData.setFromY(y);
             } else {
+                log.info("put a new piece");
                 put(gameData, x, y, state);
             }
         }
