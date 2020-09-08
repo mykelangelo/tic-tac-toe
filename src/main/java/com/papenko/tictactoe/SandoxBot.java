@@ -50,14 +50,14 @@ public class SandoxBot extends TelegramLongPollingBot {
         article0.setId("0");
         article0.setTitle("Go first");
         article0.setDescription("Whanna go first? Click me!");
-        article0.setThumbUrl("https://pixabay.com/vectors/one-green-square-rounded-number-1-39418/");
+        article0.setThumbUrl("https://cdn.pixabay.com/photo/2012/04/24/11/24/one-39418_1280.png");
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
         article1.setInputMessageContent(new InputTextMessageContent().setMessageText("1"));
         article1.setId("1");
         article1.setTitle("Go second");
         article1.setDescription("Whanna go second? Click me!");
-        article1.setThumbUrl("https://pixabay.com/vectors/two-blue-square-rounded-number-39419/");
+        article1.setThumbUrl("https://cdn.pixabay.com/photo/2012/04/24/11/24/two-39419_1280.png");
 
         return List.of(article0, article1);
     }
