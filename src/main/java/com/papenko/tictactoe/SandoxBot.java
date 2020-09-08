@@ -37,27 +37,31 @@ public class SandoxBot extends TelegramLongPollingBot {
         this.service = service;
     }
 
-    private static AnswerInlineQuery convertResultsToResponse(InlineQuery inlineQuery) {
+    private AnswerInlineQuery getResponse(InlineQuery inlineQuery) {
         AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
         answerInlineQuery.setInlineQueryId(inlineQuery.getId());
-        answerInlineQuery.setResults(provideTwoOptions());
+        answerInlineQuery.setResults(provideTwoOptions(inlineQuery));
         return answerInlineQuery;
     }
 
-    private static List<InlineQueryResult> provideTwoOptions() {
+    private List<InlineQueryResult> provideTwoOptions(InlineQuery inlineQuery) {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
-        article0.setInputMessageContent(new InputTextMessageContent().setMessageText("/start 1"));
+        article0.setInputMessageContent(new InputTextMessageContent().setMessageText("go1"));
         article0.setId("0");
+        article0.setReplyMarkup(new InlineKeyboardMarkup()
+                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId()))));
         article0.setTitle("Go first");
-        article0.setDescription("Whanna go first? Click me!");
+        article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474303-458e1b80-f1e4-11ea-99eb-14b00a8144f6.png");
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
-        article1.setInputMessageContent(new InputTextMessageContent().setMessageText("/start 2"));
+        article1.setInputMessageContent(new InputTextMessageContent().setMessageText("go2"));
         article1.setId("1");
+        article0.setReplyMarkup(new InlineKeyboardMarkup()
+                .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId()))));
         article1.setTitle("Go second");
-        article1.setDescription("Whanna go second? Click me!");
+        article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
 
@@ -68,7 +72,7 @@ public class SandoxBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasInlineQuery()) {
             try {
-                execute(convertResultsToResponse(update.getInlineQuery()));
+                execute(getResponse(update.getInlineQuery()));
             } catch (TelegramApiException e) {
                 log.error("could not execute (new inline game)", e);
             }
@@ -77,7 +81,7 @@ public class SandoxBot extends TelegramLongPollingBot {
             long messageId = update.getMessage().getMessageId();
             long chatId = update.getMessage().getChatId();
             if ("/start".equals(messageText)) {
-                GameData gameData = service.fetchGameData(chatId, messageId);
+                GameData gameData = service.fetchGameData(GameData.createId(chatId, messageId));
                 var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
 
                 var message = new SendMessage()
@@ -99,7 +103,7 @@ public class SandoxBot extends TelegramLongPollingBot {
             if (callData.startsWith("c")) {
                 var x = Integer.valueOf(callData.substring(1, 2));
                 var y = Integer.valueOf(callData.substring(2, 3));
-                GameData gameData = service.fetchGameData(chatId, messageId);
+                GameData gameData = service.fetchGameData(GameData.createId(chatId, messageId));
 
                 var state = messageText.startsWith("X") ? CellState.X : CellState.O;
                 service.makeMove(state, x, y, gameData);

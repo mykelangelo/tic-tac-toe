@@ -20,8 +20,8 @@ public class GameData {
     private Integer fromX;
     private Integer fromY;
 
-    public GameData(Long chatId, Long messageId) {
-        id = createId(chatId, messageId);
+    public GameData(String id) {
+        this.id = id;
 
         c00 = CellState.EMPTY;
         c01 = CellState.EMPTY;

@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class GameService {
     private final GameRepository repository;
 
-    public GameData fetchGameData(long chatId, long messageId) {
-        return repository.findById(GameData.createId(chatId, messageId))
-                .orElse(repository.save(new GameData(chatId, messageId)));
+    public GameData fetchGameData(String id) {
+        return repository.findById(id)
+                .orElse(repository.save(new GameData(id)));
     }
 
     public static boolean isFree(GameData gameData, Integer x, Integer y) {
