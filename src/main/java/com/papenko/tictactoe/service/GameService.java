@@ -47,7 +47,7 @@ public class GameService {
         gameData.setCellByCoordinates(x, y, gameData.getCurrentState());
     }
 
-    public void makeMove(Integer x, Integer y, GameData gameData) {
+    public boolean makeMove(Integer x, Integer y, GameData gameData) {
         log.info("field: {}, x: {}, y: {}", gameData, x, y);
         if (gameData.isMoveInProgress()) {
             log.info("move was in progress, about to finish it");
@@ -56,7 +56,7 @@ public class GameService {
                 gameData.setMoveInProgress(false);
                 alterCurrentState(gameData);
                 repository.save(gameData);
-                return;
+                return isGameFinished(gameData);
             }
         }
         log.info("about to start new move");
@@ -71,6 +71,35 @@ public class GameService {
         }
         alterCurrentState(gameData);
         repository.save(gameData);
+        return isGameFinished(gameData);
+    }
+
+    private static boolean isGameFinished(GameData data) {
+        if (data.getC00() != CellState.EMPTY) {
+            if ((data.getC00() == data.getC01() && data.getC00() == data.getC02()) ||
+                    (data.getC00() == data.getC10() && data.getC00() == data.getC20())) {
+                return data.getC11() == data.getC00() || data.getC11() == CellState.EMPTY;
+            }
+        }
+        if (data.getC22() != CellState.EMPTY) {
+            if ((data.getC22() == data.getC20() && data.getC21() == data.getC22()) ||
+                    (data.getC22() == data.getC02() && data.getC22() == data.getC12())) {
+                return data.getC11() == data.getC22() || data.getC11() == CellState.EMPTY;
+            }
+        }
+        if (data.getC11() != CellState.EMPTY) {
+            if ((data.getC00() == data.getC11() && data.getC22() == data.getC11()) ||
+                    (data.getC11() == data.getC02() && data.getC20() == data.getC11())) {
+                return !(data.getC01() != data.getC11() || data.getC10() != data.getC11() ||
+                        data.getC21() != data.getC11() || data.getC12() != data.getC11());
+            }
+            if ((data.getC01() == data.getC11() && data.getC11() == data.getC21()) ||
+                    (data.getC10() == data.getC11() && data.getC11() == data.getC12())) {
+                return !(data.getC00() != data.getC11() || data.getC20() != data.getC11() ||
+                        data.getC22() != data.getC11() || data.getC02() != data.getC11());
+            }
+        }
+        return false;
     }
 
     private void alterCurrentState(GameData gameData) {

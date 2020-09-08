@@ -106,26 +106,35 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var y = Integer.valueOf(callData.substring(2, 3));
                     GameData gameData = service.fetchGameData(id);
 
-                    service.makeMove(x, y, gameData);
-
-                    if (!gameData.isMoveInProgress()) {
-                        var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
-
+                    if (service.makeMove(x, y, gameData)) {
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText(swapMessage(gameData.getCurrentState()))
-                                .setReplyMarkup(markup);
+                                .setText(gameData.getCurrentState() + " won!");
 
                         try {
                             execute(message);
                         } catch (TelegramApiException e) {
-                            log.error("could not execute (game in progress)", e);
+                            log.error("could not execute (game finished)", e);
+                        }
+                    } else {
+                        if (!gameData.isMoveInProgress()) {
+                            var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+
+                            var message = new EditMessageText()
+                                    .setInlineMessageId(id)
+                                    .setText(swapMessage(gameData.getCurrentState()))
+                                    .setReplyMarkup(markup);
+
+                            try {
+                                execute(message);
+                            } catch (TelegramApiException e) {
+                                log.error("could not execute (game in progress)", e);
+                            }
                         }
                     }
                 }
                 return;
             }
-            String messageText = update.getCallbackQuery().getMessage().getText();
             long messageId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             String callData = update.getCallbackQuery().getData();
@@ -134,22 +143,32 @@ public class SandoxBot extends TelegramLongPollingBot {
                 var y = Integer.valueOf(callData.substring(2, 3));
                 GameData gameData = service.fetchGameData(GameData.createId(chatId, messageId));
 
-                var state = messageText.startsWith("X") ? CellState.X : CellState.O;
-                service.makeMove(x, y, gameData);
-
-                if (!gameData.isMoveInProgress()) {
-                    var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
-
+                if (service.makeMove(x, y, gameData)) {
                     var message = new EditMessageText()
                             .setChatId(chatId)
                             .setMessageId(toIntExact(messageId))
-                            .setText(swapMessage(gameData.getCurrentState()))
-                            .setReplyMarkup(markup);
+                            .setText(gameData.getCurrentState() + " won!");
 
                     try {
                         execute(message);
                     } catch (TelegramApiException e) {
-                        log.error("could not execute (game in progress)", e);
+                        log.error("could not execute (game finished)", e);
+                    }
+                } else {
+                    if (!gameData.isMoveInProgress()) {
+                        var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+
+                        var message = new EditMessageText()
+                                .setChatId(chatId)
+                                .setMessageId(toIntExact(messageId))
+                                .setText(swapMessage(gameData.getCurrentState()))
+                                .setReplyMarkup(markup);
+
+                        try {
+                            execute(message);
+                        } catch (TelegramApiException e) {
+                            log.error("could not execute (game in progress)", e);
+                        }
                     }
                 }
             }
