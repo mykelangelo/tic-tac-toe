@@ -69,7 +69,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
         log.info("first user: {}", inlineQuery.getFrom());
-        service.addFirstUser(gameData, inlineQuery.getFrom());
+        service.addFirstUser(gameData, inlineQuery.getFrom().getId());
 
         return List.of(article0, article1);
     }
@@ -111,10 +111,10 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var order = Integer.valueOf(callData.substring(3, 4));
                     GameData gameData = service.fetchGameData(id);
                     log.info("user {}", update.getCallbackQuery().getFrom());
-                    log.info("first user from db {}", gameData.getFirstUser());
+                    log.info("first user from db {}", gameData.getFirstUserId());
                     if (order == 2) {
-                        if (gameData.getSecondUser() == null) {
-                            if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUser().getId())) {
+                        if (gameData.getSecondUserId() == null) {
+                            if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
                                 try {
                                     log.info("first user attempts to go twice in a row");
                                     execute(new AnswerCallbackQuery()
@@ -125,13 +125,13 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 }
                                 return;
                             } else {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom().getId());
                             }
                         }
                     } else {
-                        if (gameData.getSecondUser() == null) {
-                            if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUser().getId())) {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                        if (gameData.getSecondUserId() == null) {
+                            if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom().getId());
                                 try {
                                     log.info("second user interrupts first move");
                                     execute(new AnswerCallbackQuery()
