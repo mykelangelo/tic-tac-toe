@@ -30,13 +30,11 @@ public class GameService {
         }
         gameData.setCellByCoordinates(gameData.getFromX(), gameData.getFromY(), CellState.EMPTY);
         gameData.setCellByCoordinates(x, y, from);
-        repository.save(gameData);
         return true;
     }
 
     private void put(GameData gameData, Integer x, Integer y, CellState state) {
         gameData.setCellByCoordinates(x, y, state);
-        repository.save(gameData);
     }
 
     public void makeMove(CellState state, Integer x, Integer y, GameData gameData) {
@@ -59,5 +57,6 @@ public class GameService {
                 put(gameData, x, y, state);
             }
         }
+        repository.save(gameData);
     }
 }
