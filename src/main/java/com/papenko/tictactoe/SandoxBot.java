@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputContactMessageContent;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -46,14 +46,14 @@ public class SandoxBot extends TelegramLongPollingBot {
 
     private static List<InlineQueryResult> provideTwoOptions() {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
-        article0.setInputMessageContent(new InputContactMessageContent());
+        article0.setInputMessageContent(new InputTextMessageContent());
         article0.setId("0");
         article0.setTitle("Go first");
         article0.setDescription("Whanna go first? Click me!");
         article0.setThumbUrl("https://pixabay.com/vectors/one-green-square-rounded-number-1-39418/");
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
-        article1.setInputMessageContent(new InputContactMessageContent());
+        article1.setInputMessageContent(new InputTextMessageContent());
         article1.setId("1");
         article1.setTitle("Go second");
         article1.setDescription("Whanna go second? Click me!");
