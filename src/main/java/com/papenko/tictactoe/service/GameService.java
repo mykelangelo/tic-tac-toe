@@ -170,10 +170,12 @@ public class GameService {
     public void addFirstUser(GameData gameData, User first) {
         gameData.setFirstUser(first);
         repository.save(gameData);
+        repository.refresh();
     }
 
     public void addSecondUser(GameData gameData, User first) {
         gameData.setSecondUser(first);
         repository.save(gameData);
+        repository.refresh();
     }
 }
