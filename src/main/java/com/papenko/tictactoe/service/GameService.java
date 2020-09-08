@@ -29,8 +29,13 @@ public class GameService {
             gameData.setMoveInProgress(false);
             return false;
         }
-        if (from == gameData.getCellByCoordinates(x, y)) {
+        CellState to = gameData.getCellByCoordinates(x, y);
+        if (from == to) {
             log.info("cannot eat the piece of the same type {}", from);
+            return false;
+        }
+        if (from == CellState.EMPTY || to == CellState.EMPTY) {
+            log.info("one of the cells is empty");
             return false;
         }
         gameData.setCellByCoordinates(gameData.getFromX(), gameData.getFromY(), CellState.EMPTY);
