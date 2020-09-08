@@ -3,12 +3,17 @@ package com.papenko.tictactoe;
 import com.papenko.tictactoe.entity.CellState;
 import com.papenko.tictactoe.entity.GameData;
 import com.papenko.tictactoe.service.GameService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -17,6 +22,7 @@ import java.util.List;
 
 import static java.lang.Math.toIntExact;
 
+@Slf4j
 @Component
 public class SandoxBot extends TelegramLongPollingBot {
     private static final String O_S_TURN = "O's turn";
@@ -30,9 +36,38 @@ public class SandoxBot extends TelegramLongPollingBot {
         this.service = service;
     }
 
+    private static AnswerInlineQuery convertResultsToResponse(InlineQuery inlineQuery) {
+        AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
+        answerInlineQuery.setInlineQueryId(inlineQuery.getId());
+        answerInlineQuery.setResults(provideTwoOptions());
+        return answerInlineQuery;
+    }
+
+    private static List<InlineQueryResult> provideTwoOptions() {
+        InlineQueryResultArticle article0 = new InlineQueryResultArticle();
+        article0.setId("0");
+        article0.setTitle("Go first");
+        article0.setDescription("Whanna go first? Click me!");
+        article0.setThumbUrl("https://pixabay.com/vectors/one-green-square-rounded-number-1-39418/");
+
+        InlineQueryResultArticle article1 = new InlineQueryResultArticle();
+        article1.setId("1");
+        article1.setTitle("Go second");
+        article1.setDescription("Whanna go second? Click me!");
+        article1.setThumbUrl("https://pixabay.com/vectors/two-blue-square-rounded-number-39419/");
+
+        return List.of(article0, article1);
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasInlineQuery()) {
+            try {
+                execute(convertResultsToResponse(update.getInlineQuery()));
+            } catch (TelegramApiException e) {
+                log.error("could not execute (new inline game)", e);
+            }
+        } else if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             long messageId = update.getMessage().getMessageId();
             long chatId = update.getMessage().getChatId();
@@ -48,7 +83,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    log.error("could not execute (new game)", e);
                 }
             }
         } else if (update.hasCallbackQuery()) {
@@ -76,7 +111,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     try {
                         execute(message);
                     } catch (TelegramApiException e) {
-                        e.printStackTrace();
+                        log.error("could not execute (game in progress)", e);
                     }
                 }
             }
