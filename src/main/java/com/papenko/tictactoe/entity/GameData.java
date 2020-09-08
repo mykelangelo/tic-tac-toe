@@ -19,6 +19,7 @@ public class GameData {
     private boolean moveInProgress;
     private Integer fromX;
     private Integer fromY;
+    private CellState currentState;
 
     public GameData(String id) {
         this.id = id;
@@ -34,6 +35,7 @@ public class GameData {
         c20 = CellState.EMPTY;
         c21 = CellState.EMPTY;
         c22 = CellState.EMPTY;
+        currentState = CellState.X;
     }
 
     public static String createId(Long chatId, Long messageId) {

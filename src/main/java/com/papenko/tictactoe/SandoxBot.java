@@ -46,7 +46,8 @@ public class SandoxBot extends TelegramLongPollingBot {
 
     private List<InlineQueryResult> provideTwoOptions(InlineQuery inlineQuery) {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
-        article0.setInputMessageContent(new InputTextMessageContent().setMessageText("go1"));
+        article0.setInputMessageContent(new InputTextMessageContent()
+                .setMessageText(inlineQuery.getFrom().getFirstName() + "goes first"));
         article0.setId("0");
         final InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup()
                 .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId())));
@@ -57,9 +58,10 @@ public class SandoxBot extends TelegramLongPollingBot {
                 "92474303-458e1b80-f1e4-11ea-99eb-14b00a8144f6.png");
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
-        article1.setInputMessageContent(new InputTextMessageContent().setMessageText("go2"));
+        article1.setInputMessageContent(new InputTextMessageContent()
+                .setMessageText(inlineQuery.getFrom().getFirstName() + "goes second"));
         article1.setId("1");
-        article0.setReplyMarkup(replyMarkup);
+        article1.setReplyMarkup(replyMarkup);
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -96,7 +98,33 @@ public class SandoxBot extends TelegramLongPollingBot {
                 }
             }
         } else if (update.hasCallbackQuery()) {
-            log.info("callback! {}", update.getCallbackQuery());
+            if (update.getCallbackQuery().getMessage() == null) {
+                String id = update.getCallbackQuery().getId();
+                String callData = update.getCallbackQuery().getData();
+                if (callData.startsWith("c")) {
+                    var x = Integer.valueOf(callData.substring(1, 2));
+                    var y = Integer.valueOf(callData.substring(2, 3));
+                    GameData gameData = service.fetchGameData(id);
+
+                    service.makeMove(x, y, gameData);
+
+                    if (!gameData.isMoveInProgress()) {
+                        var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+
+                        var message = new EditMessageText()
+                                .setInlineMessageId(id)
+                                .setText(swapMessage(gameData.getCurrentState()))
+                                .setReplyMarkup(markup);
+
+                        try {
+                            execute(message);
+                        } catch (TelegramApiException e) {
+                            log.error("could not execute (game in progress)", e);
+                        }
+                    }
+                }
+                return;
+            }
             String messageText = update.getCallbackQuery().getMessage().getText();
             long messageId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -107,7 +135,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 GameData gameData = service.fetchGameData(GameData.createId(chatId, messageId));
 
                 var state = messageText.startsWith("X") ? CellState.X : CellState.O;
-                service.makeMove(state, x, y, gameData);
+                service.makeMove(x, y, gameData);
 
                 if (!gameData.isMoveInProgress()) {
                     var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
@@ -115,7 +143,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var message = new EditMessageText()
                             .setChatId(chatId)
                             .setMessageId(toIntExact(messageId))
-                            .setText(swapMessage(messageText))
+                            .setText(swapMessage(gameData.getCurrentState()))
                             .setReplyMarkup(markup);
 
                     try {
@@ -128,8 +156,8 @@ public class SandoxBot extends TelegramLongPollingBot {
         }
     }
 
-    private String swapMessage(String messageText) {
-        return messageText.startsWith("X") ? O_S_TURN : X_S_TURN;
+    private String swapMessage(CellState cellState) {
+        return cellState == CellState.O ? O_S_TURN : X_S_TURN;
     }
 
     private List<List<InlineKeyboardButton>> getGameField(GameData gameData) {

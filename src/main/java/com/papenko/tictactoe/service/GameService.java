@@ -22,10 +22,10 @@ public class GameService {
         return gameData.getCellByCoordinates(x, y) == CellState.EMPTY;
     }
 
-    private boolean eat(GameData gameData, Integer x, Integer y, CellState state) {
+    private boolean eat(GameData gameData, Integer x, Integer y) {
         CellState from = gameData.getCellByCoordinates(gameData.getFromX(), gameData.getFromY());
-        if (from != state) {
-            log.info("starting state is not {}", state);
+        if (from != gameData.getCurrentState()) {
+            log.info("starting state is not {}", gameData.getCurrentState());
             gameData.setMoveInProgress(false);
             return false;
         }
@@ -43,17 +43,18 @@ public class GameService {
         return true;
     }
 
-    private void put(GameData gameData, Integer x, Integer y, CellState state) {
-        gameData.setCellByCoordinates(x, y, state);
+    private void put(GameData gameData, Integer x, Integer y) {
+        gameData.setCellByCoordinates(x, y, gameData.getCurrentState());
     }
 
-    public void makeMove(CellState state, Integer x, Integer y, GameData gameData) {
-        log.info("field: {}, state: {}, x: {}, y: {}", gameData, state, x, y);
+    public void makeMove(Integer x, Integer y, GameData gameData) {
+        log.info("field: {}, x: {}, y: {}", gameData, x, y);
         if (gameData.isMoveInProgress()) {
             log.info("move was in progress, about to finish it");
-            if (eat(gameData, x, y, state)) {
+            if (eat(gameData, x, y)) {
                 log.info("move has finished!");
                 gameData.setMoveInProgress(false);
+                alterCurrentState(gameData);
                 repository.save(gameData);
                 return;
             }
@@ -66,8 +67,13 @@ public class GameService {
             gameData.setFromY(y);
         } else {
             log.info("put a new piece");
-            put(gameData, x, y, state);
+            put(gameData, x, y);
         }
+        alterCurrentState(gameData);
         repository.save(gameData);
+    }
+
+    private void alterCurrentState(GameData gameData) {
+        gameData.setCurrentState(gameData.getCurrentState() == CellState.X ? CellState.O : CellState.X);
     }
 }
