@@ -47,7 +47,7 @@ public class SandoxBot extends TelegramLongPollingBot {
     private List<InlineQueryResult> provideTwoOptions(InlineQuery inlineQuery) {
         InlineQueryResultArticle article0 = new InlineQueryResultArticle();
         article0.setInputMessageContent(new InputTextMessageContent()
-                .setMessageText(inlineQuery.getFrom().getFirstName() + "goes first"));
+                .setMessageText(inlineQuery.getFrom().getFirstName() + " goes first"));
         article0.setId("0");
         final InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup()
                 .setKeyboard(getGameField(service.fetchGameData(inlineQuery.getId())));
@@ -59,7 +59,7 @@ public class SandoxBot extends TelegramLongPollingBot {
 
         InlineQueryResultArticle article1 = new InlineQueryResultArticle();
         article1.setInputMessageContent(new InputTextMessageContent()
-                .setMessageText(inlineQuery.getFrom().getFirstName() + "goes second"));
+                .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
         article1.setReplyMarkup(replyMarkup);
         article1.setTitle("Go second");
@@ -113,7 +113,6 @@ public class SandoxBot extends TelegramLongPollingBot {
 
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText(swapMessage(gameData.getCurrentState()))
                                 .setReplyMarkup(markup);
 
                         try {

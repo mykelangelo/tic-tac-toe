@@ -44,8 +44,8 @@ public class GameData {
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
+        return "{state=" + currentState +
+                ", id=" + id +
                 '\n' + c00 +
                 '|' + c01 +
                 '|' + c02 +
