@@ -99,7 +99,7 @@ public class SandoxBot extends TelegramLongPollingBot {
             }
         } else if (update.hasCallbackQuery()) {
             if (update.getCallbackQuery().getMessage() == null) {
-                String id = update.getCallbackQuery().getId();
+                String id = update.getCallbackQuery().getInlineMessageId();
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
                     var x = Integer.valueOf(callData.substring(1, 2));
