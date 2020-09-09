@@ -70,7 +70,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
 
         log.info("first user: {}", inlineQuery.getFrom());
-        service.addFirstUser(gameData, inlineQuery.getFrom().getId());
+        service.addFirstUser(gameData, inlineQuery.getFrom());
 
         return List.of(article0, article1);
     }
@@ -125,13 +125,13 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 }
                                 return;
                             } else {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom().getId());
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
                             }
                         }
                     } else {
                         if (gameData.getSecondUserId() == null) {
                             if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom().getId());
+                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
                                 try {
                                     log.info("second user interrupts first move");
                                     execute(new AnswerCallbackQuery()
@@ -144,12 +144,28 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
+                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
+                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
+                        try {
+                            log.info("third user interrupts");
+                            execute(new AnswerCallbackQuery()
+                                    .setCallbackQueryId(update.getCallbackQuery().getId())
+                                    .setShowAlert(true).setText("✋"));
+                        } catch (TelegramApiException e) {
+                            log.error("could not execute (third user)", e);
+                        }
+                        return;
+                    }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
+                        final boolean xMove = gameData.getCurrentState() == CellState.X;
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText(swapState(gameData.getCurrentState()) + " won!");
+                                .setText((xMove ? gameData.getFirstUserName() : gameData.getSecondUserName())
+                                        + " \uD83C\uDFC6 (" + swapState(gameData.getCurrentState()) + ") won" +
+                                        (xMove ? gameData.getSecondUserName() : gameData.getFirstUserName() +
+                                                " \uD83D\uDE2D !"));
 
                         try {
                             execute(message);
@@ -219,6 +235,7 @@ public class SandoxBot extends TelegramLongPollingBot {
     private String swapMessage(CellState cellState) {
         return cellState == CellState.O ? O_S_TURN : X_S_TURN;
     }
+
     private String swapState(CellState cellState) {
         return cellState == CellState.O ? CellState.X.toString() : CellState.O.toString();
     }

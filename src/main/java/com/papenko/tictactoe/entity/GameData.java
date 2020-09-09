@@ -22,6 +22,8 @@ public class GameData {
     private CellState currentState;
     private Integer firstUserId;
     private Integer secondUserId;
+    private String firstUserName;
+    private String secondUserName;
 
     public GameData(String id) {
         this.id = id;

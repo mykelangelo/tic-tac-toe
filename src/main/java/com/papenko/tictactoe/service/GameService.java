@@ -6,6 +6,7 @@ import com.papenko.tictactoe.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 @Slf4j
 @Service
@@ -159,13 +160,15 @@ public class GameService {
         gameData.setCurrentState(gameData.getCurrentState() == CellState.X ? CellState.O : CellState.X);
     }
 
-    public void addFirstUser(GameData gameData, Integer first) {
-        gameData.setFirstUserId(first);
+    public void addFirstUser(GameData gameData, User first) {
+        gameData.setFirstUserId(first.getId());
+        gameData.setFirstUserName(first.getFirstName() + (first.getLastName().isBlank() ? "" : first.getLastName()));
         repository.save(gameData);
     }
 
-    public void addSecondUser(GameData gameData, Integer second) {
-        gameData.setSecondUserId(second);
+    public void addSecondUser(GameData gameData, User second) {
+        gameData.setSecondUserId(second.getId());
+        gameData.setFirstUserName(second.getFirstName() + (second.getLastName().isBlank() ? "" : second.getLastName()));
         repository.save(gameData);
     }
 }
