@@ -162,13 +162,13 @@ public class GameService {
 
     public void addFirstUser(GameData gameData, User first) {
         gameData.setFirstUserId(first.getId());
-        gameData.setFirstUserName(first.getFirstName() + (first.getLastName().isBlank() ? "" : first.getLastName()));
+        gameData.setFirstUserName(first.getFirstName() + (first.getLastName() == null ? "" : first.getLastName()));
         repository.save(gameData);
     }
 
     public void addSecondUser(GameData gameData, User second) {
         gameData.setSecondUserId(second.getId());
-        gameData.setFirstUserName(second.getFirstName() + (second.getLastName().isBlank() ? "" : second.getLastName()));
+        gameData.setFirstUserName(second.getFirstName() + (second.getLastName() == null ? "" : second.getLastName()));
         repository.save(gameData);
     }
 }
