@@ -107,9 +107,10 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
                     var order = Integer.parseInt(callData.substring(3, 4));
-                    GameData gameData = service.fetchGameData(id);
+                    GameData gameData = service.fetchGameData(update.getCallbackQuery().getId());
                     log.info("user {}", update.getCallbackQuery().getFrom());
                     log.info("first user from db {}", gameData.getFirstUserId());
+                    log.info("second user from db {}", gameData.getSecondUserId());
                     if (order == 2) {
                         if (gameData.getSecondUserId() == null) {
                             if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
