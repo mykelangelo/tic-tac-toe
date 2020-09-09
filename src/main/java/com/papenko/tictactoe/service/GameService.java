@@ -131,7 +131,7 @@ public class GameService {
                     (data.getC00() == data.getC10() && data.getC00() == data.getC20())) &&
                     ((data.getC22() == data.getC20() && data.getC21() == data.getC22()) ||
                             (data.getC22() == data.getC02() && data.getC22() == data.getC12()))) {
-                return false;
+                return data.getC11() != CellState.EMPTY;
             }
         }
         if (data.getC00() != CellState.EMPTY) {
