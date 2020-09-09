@@ -126,6 +126,14 @@ public class GameService {
     }
 
     private static boolean isGameFinished(GameData data) {
+        if (data.getC00() != CellState.EMPTY && data.getC22() != CellState.EMPTY && data.getC00() != data.getC22()) {
+            if (((data.getC00() == data.getC01() && data.getC00() == data.getC02()) ||
+                    (data.getC00() == data.getC10() && data.getC00() == data.getC20())) &&
+                    ((data.getC22() == data.getC20() && data.getC21() == data.getC22()) ||
+                            (data.getC22() == data.getC02() && data.getC22() == data.getC12()))) {
+                return false;
+            }
+        }
         if (data.getC00() != CellState.EMPTY) {
             if ((data.getC00() == data.getC01() && data.getC00() == data.getC02()) ||
                     (data.getC00() == data.getC10() && data.getC00() == data.getC20())) {

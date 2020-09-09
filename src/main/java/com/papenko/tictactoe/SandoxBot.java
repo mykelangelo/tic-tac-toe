@@ -164,8 +164,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 .setInlineMessageId(id)
                                 .setText((xMove ? gameData.getFirstUserName() : gameData.getSecondUserName())
                                         + " \uD83C\uDFC6 (" + swapState(gameData.getCurrentState()) + ") won" +
-                                        (xMove ? gameData.getSecondUserName() : gameData.getFirstUserName() +
-                                                " \uD83D\uDE2D !"));
+                                        (xMove ? gameData.getSecondUserName() : gameData.getFirstUserName()) +
+                                                " \uD83D\uDE2D !\n" + gameData);
 
                         try {
                             execute(message);
