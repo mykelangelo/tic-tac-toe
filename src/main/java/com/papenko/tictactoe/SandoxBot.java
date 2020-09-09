@@ -161,12 +161,13 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
-                        final boolean xMove = gameData.getCurrentState() == CellState.X;
+                        final boolean firstUserWins = (gameData.getCurrentState() == CellState.O && order == 1) ||
+                                (gameData.getCurrentState() == CellState.X && order == 2);
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText((xMove ? gameData.getFirstUserName() : gameData.getSecondUserName())
+                                .setText((firstUserWins ? gameData.getFirstUserName() : gameData.getSecondUserName())
                                         + " \uD83C\uDFC6, " +
-                                        (xMove ? gameData.getSecondUserName() : gameData.getFirstUserName()) +
+                                        (firstUserWins ? gameData.getSecondUserName() : gameData.getFirstUserName()) +
                                         " \uD83D\uDE2D !\n" + gameData);
 
                         try {
