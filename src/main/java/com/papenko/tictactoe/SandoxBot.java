@@ -134,15 +134,6 @@ public class SandoxBot extends TelegramLongPollingBot {
                         if (data.getSecondUserId() == null) {
                             if (!update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
                                 service.addSecondUser(data, update.getCallbackQuery().getFrom());
-                                try {
-                                    log.info("second user interrupts first move");
-                                    execute(new AnswerCallbackQuery()
-                                            .setCallbackQueryId(update.getCallbackQuery().getId())
-                                            .setShowAlert(true).setText("✋"));
-                                } catch (TelegramApiException e) {
-                                    log.error("could not execute (second user interrupts first move)", e);
-                                }
-                                return;
                             }
                         }
                     }
@@ -157,6 +148,59 @@ public class SandoxBot extends TelegramLongPollingBot {
                             log.error("could not execute (third user)", e);
                         }
                         return;
+                    }
+                    if (order == 1) {
+                        if (data.getCurrentState() == CellState.O) {
+                            if (update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
+                                try {
+                                    log.info("first user interrupts O move");
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (first user interrupts O move)", e);
+                                }
+                                return;
+                            }
+                        } else {
+                            if (update.getCallbackQuery().getFrom().getId().equals(data.getSecondUserId())) {
+                                try {
+                                    log.info("second user interrupts X move");
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (second user interrupts X move)", e);
+                                }
+                                return;
+                            }
+                        }
+                    } else {
+                        if (data.getCurrentState() == CellState.X) {
+                            if (update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
+                                try {
+                                    log.info("first user interrupts X move");
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (first user interrupts X move)", e);
+                                }
+                                return;
+                            }
+                        } else {
+                            if (update.getCallbackQuery().getFrom().getId().equals(data.getSecondUserId())) {
+                                try {
+                                    log.info("second user interrupts O move");
+                                    execute(new AnswerCallbackQuery()
+                                            .setCallbackQueryId(update.getCallbackQuery().getId())
+                                            .setShowAlert(true).setText("✋"));
+                                } catch (TelegramApiException e) {
+                                    log.error("could not execute (second user interrupts O move)", e);
+                                }
+                                return;
+                            }
+                        }
                     }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
