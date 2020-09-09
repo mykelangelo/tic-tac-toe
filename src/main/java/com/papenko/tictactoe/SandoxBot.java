@@ -106,9 +106,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String id = update.getCallbackQuery().getInlineMessageId();
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
-                    var x = Integer.valueOf(callData.substring(1, 2));
-                    var y = Integer.valueOf(callData.substring(2, 3));
-                    var order = Integer.valueOf(callData.substring(3, 4));
+                    log.info("callData: {}", callData);
+                    var order = Integer.parseInt(callData.substring(3, 4));
                     GameData gameData = service.fetchGameData(id);
                     log.info("user {}", update.getCallbackQuery().getFrom());
                     log.info("first user from db {}", gameData.getFirstUserId());
@@ -116,12 +115,12 @@ public class SandoxBot extends TelegramLongPollingBot {
                         if (gameData.getSecondUserId() == null) {
                             if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
                                 try {
-                                    log.info("first user attempts to go twice in a row");
+                                    log.info("first user attempts to go first, when he must be second");
                                     execute(new AnswerCallbackQuery()
                                             .setCallbackQueryId(update.getCallbackQuery().getId())
                                             .setShowAlert(true).setText("✋"));
                                 } catch (TelegramApiException e) {
-                                    log.error("could not execute (first user twice in a row)", e);
+                                    log.error("could not execute (first user goes first, when he must be second)", e);
                                 }
                                 return;
                             } else {
@@ -144,6 +143,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
+                    var x = Integer.valueOf(callData.substring(1, 2));
+                    var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
