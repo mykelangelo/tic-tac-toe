@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import static java.lang.Math.toIntExact;
@@ -51,8 +52,9 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes first"));
         article0.setId("0");
         final GameData gameData = service.fetchGameData(inlineQuery.getId());
+        int random = new SecureRandom().nextInt();
         article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "1" + inlineQuery.getId())));
+                .setKeyboard(getGameField(gameData, "1" + inlineQuery.getId() + random)));
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -63,7 +65,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
         article1.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "2" + inlineQuery.getId())));
+                .setKeyboard(getGameField(gameData, "2" + inlineQuery.getId() + random)));
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -162,7 +164,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
-                        final boolean xMove = gameData.getCurrentState() == CellState.X && order == 1;
+                        final boolean xMove = gameData.getCurrentState() == CellState.X && order == 2;
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
                                 .setText((xMove ? gameData.getFirstUserName() : gameData.getSecondUserName())
