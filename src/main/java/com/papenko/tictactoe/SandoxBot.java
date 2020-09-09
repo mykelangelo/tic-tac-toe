@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.security.SecureRandom;
 import java.util.List;
 
 import static java.lang.Math.toIntExact;
@@ -52,9 +51,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes first"));
         article0.setId("0");
         final GameData gameData = service.fetchGameData(inlineQuery.getId());
-        int random = new SecureRandom().nextInt();
         article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "1" + inlineQuery.getId() + random)));
+                .setKeyboard(getGameField(gameData, "1|" + inlineQuery.getFrom().getId())));
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -65,15 +63,11 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
         article1.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "2" + inlineQuery.getId() + random)));
+                .setKeyboard(getGameField(gameData, "2|" + inlineQuery.getFrom().getId())));
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
-
-        log.info("@inline_query_id: {}", inlineQuery.getId());
-        log.info("first user: {}", inlineQuery.getFrom());
-        service.addFirstUser(gameData, inlineQuery.getFrom());
 
         return List.of(article0, article1);
     }
@@ -111,9 +105,12 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
                     var order = Integer.parseInt(callData.substring(3, 4));
-                    final String inlineQueryId = callData.substring(4);
-                    log.info("inline_query_id: {}", inlineQueryId);
-                    GameData gameData = service.fetchGameData(inlineQueryId);
+                    log.info("callData: {}", callData);
+                    GameData gameData = service.fetchGameData(id);
+                    if (gameData.getFirstUserId() == null &&
+                            update.getCallbackQuery().getFrom().getId() == Integer.parseInt(callData.substring(5))) {
+                        service.addFirstUser(gameData, update.getCallbackQuery().getFrom());
+                    }
                     log.info("user {}", update.getCallbackQuery().getFrom());
                     log.info("first user from db {}", gameData.getFirstUserId());
                     log.info("second user from db {}", gameData.getSecondUserId());
