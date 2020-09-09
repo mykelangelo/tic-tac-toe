@@ -160,6 +160,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 } catch (TelegramApiException e) {
                                     log.error("could not execute (first user interrupts O move)", e);
                                 }
+                                service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
+                                service.addSecondUser(data, data.getSecondUserId(), data.getSecondUserName(), null);
                                 return;
                             }
                         } else {
@@ -172,6 +174,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 } catch (TelegramApiException e) {
                                     log.error("could not execute (second user interrupts X move)", e);
                                 }
+                                service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
+                                service.addSecondUser(data, data.getSecondUserId(), data.getSecondUserName(), null);
                                 return;
                             }
                         }

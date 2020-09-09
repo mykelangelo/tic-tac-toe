@@ -169,14 +169,22 @@ public class GameService {
     }
 
     public void addFirstUser(GameData gameData, User first) {
-        gameData.setFirstUserId(first.getId());
-        gameData.setFirstUserName(first.getFirstName() + (first.getLastName() == null ? "" : first.getLastName()));
+        addFirstUser(gameData, first.getId(), first.getFirstName(), first.getLastName());
+    }
+
+    public void addFirstUser(GameData gameData, Integer id, String firstName, String lastName) {
+        gameData.setFirstUserId(id);
+        gameData.setFirstUserName(firstName + (lastName == null ? "" : (' ' + lastName)));
         repository.save(gameData);
     }
 
     public void addSecondUser(GameData gameData, User second) {
-        gameData.setSecondUserId(second.getId());
-        gameData.setSecondUserName(second.getFirstName() + (second.getLastName() == null ? "" : second.getLastName()));
+        addSecondUser(gameData, second.getId(), second.getFirstName(), second.getLastName());
+    }
+
+    public void addSecondUser(GameData gameData, Integer id, String firstName, String lastName) {
+        gameData.setSecondUserId(id);
+        gameData.setSecondUserName(firstName + (lastName == null ? "" : (' ' + lastName)));
         repository.save(gameData);
     }
 }
