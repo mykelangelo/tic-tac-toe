@@ -27,8 +27,8 @@ import static java.lang.Math.toIntExact;
 @Slf4j
 @Component
 public class SandoxBot extends TelegramLongPollingBot {
-    private static final String O_S_TURN = "O's turn";
-    private static final String X_S_TURN = "X's turn";
+    private static final String O_S_TURN = CellState.O + "'s turn";
+    private static final String X_S_TURN = CellState.X + "'s turn";
     private String botToken;
 
     private final GameService service;
@@ -106,17 +106,17 @@ public class SandoxBot extends TelegramLongPollingBot {
                 if (callData.startsWith("c")) {
                     var order = Integer.parseInt(callData.substring(3, 4));
                     log.info("callData: {}", callData);
-                    GameData gameData = service.fetchGameData(id);
-                    if (gameData.getFirstUserId() == null &&
+                    GameData data = service.fetchGameData(id);
+                    if (data.getFirstUserId() == null &&
                             update.getCallbackQuery().getFrom().getId() == Integer.parseInt(callData.substring(5))) {
-                        service.addFirstUser(gameData, update.getCallbackQuery().getFrom());
+                        service.addFirstUser(data, update.getCallbackQuery().getFrom());
                     }
                     log.info("user {}", update.getCallbackQuery().getFrom());
-                    log.info("first user from db {}", gameData.getFirstUserId());
-                    log.info("second user from db {}", gameData.getSecondUserId());
+                    log.info("first user from db {}", data.getFirstUserId());
+                    log.info("second user from db {}", data.getSecondUserId());
                     if (order == 2) {
-                        if (gameData.getSecondUserId() == null) {
-                            if (update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
+                        if (data.getSecondUserId() == null) {
+                            if (update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
                                 try {
                                     log.info("first user attempts to go first, when he must be second");
                                     execute(new AnswerCallbackQuery()
@@ -127,13 +127,13 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 }
                                 return;
                             } else {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                                service.addSecondUser(data, update.getCallbackQuery().getFrom());
                             }
                         }
                     } else {
-                        if (gameData.getSecondUserId() == null) {
-                            if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId())) {
-                                service.addSecondUser(gameData, update.getCallbackQuery().getFrom());
+                        if (data.getSecondUserId() == null) {
+                            if (!update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
+                                service.addSecondUser(data, update.getCallbackQuery().getFrom());
                                 try {
                                     log.info("second user interrupts first move");
                                     execute(new AnswerCallbackQuery()
@@ -146,8 +146,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
-//                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
-//                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
+//                    if (!update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId()) &&
+//                            update.getCallbackQuery().getFrom().getId().equals(data.getSecondUserId())) {
 //                        try {
 //                            log.info("third user interrupts");
 //                            execute(new AnswerCallbackQuery()
@@ -160,15 +160,15 @@ public class SandoxBot extends TelegramLongPollingBot {
 //                    }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
-                    if (service.makeMove(x, y, gameData)) {
-                        final boolean firstUserWins = (gameData.getCurrentState() == CellState.O && order == 1) ||
-                                (gameData.getCurrentState() == CellState.X && order == 2);
+                    if (service.makeMove(x, y, data)) {
+                        final boolean firstUserWins = (data.getCurrentState() == CellState.O && order == 1) ||
+                                (data.getCurrentState() == CellState.X && order == 2);
                         var message = new EditMessageText()
                                 .setInlineMessageId(id)
-                                .setText((firstUserWins ? gameData.getFirstUserName() : gameData.getSecondUserName())
+                                .setText((firstUserWins ? data.getFirstUserName() : data.getSecondUserName())
                                         + " \uD83C\uDFC6, " +
-                                        (firstUserWins ? gameData.getSecondUserName() : gameData.getFirstUserName()) +
-                                        " \uD83D\uDE2D !\n" + gameData);
+                                        (firstUserWins ? data.getSecondUserName() : data.getFirstUserName()) +
+                                        " \uD83D\uDE2D !\n" + data);
 
                         try {
                             execute(message);
@@ -176,17 +176,18 @@ public class SandoxBot extends TelegramLongPollingBot {
                             log.error("could not execute (game finished)", e);
                         }
                     } else {
-                        if (!gameData.isMoveInProgress()) {
+                        if (!data.isMoveInProgress()) {
                             var markup = new InlineKeyboardMarkup()
-                                    .setKeyboard(getGameField(gameData, callData.substring(3)));
+                                    .setKeyboard(getGameField(data, callData.substring(3)));
 
+                            final String text = data.getFirstUserName() +
+                                    " (" + (order == 1 ? CellState.X : CellState.O) +
+                                    ") vs " + (data.getSecondUserName() == null ? "❓" : data.getSecondUserName()) +
+                                    " (" + (order == 1 ? CellState.O : CellState.X) + ")\n" +
+                                    swapMessage(data.getCurrentState());
                             var message = new EditMessageText()
                                     .setInlineMessageId(id)
-                                    .setText(gameData.getFirstUserName() +
-                                            '(' + (order == 1 ? CellState.X : CellState.O) + ')' +
-                                            " vs " + gameData.getSecondUserName() +
-                                            '(' + (order == 1 ? CellState.O : CellState.X) + ')' +
-                                            swapMessage(gameData.getCurrentState()))
+                                    .setText(text)
                                     .setReplyMarkup(markup);
 
                             try {
