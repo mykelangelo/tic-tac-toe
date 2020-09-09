@@ -52,7 +52,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         article0.setId("0");
         final GameData gameData = service.fetchGameData(inlineQuery.getId());
         article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "1")));
+                .setKeyboard(getGameField(gameData, "1" + inlineQuery.getId())));
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -63,11 +63,12 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
         article1.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "2")));
+                .setKeyboard(getGameField(gameData, "2" + inlineQuery.getId())));
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
+
         log.info("first user: {}", inlineQuery.getFrom());
         service.addFirstUser(gameData, inlineQuery.getFrom().getId());
 
@@ -107,7 +108,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
                     var order = Integer.parseInt(callData.substring(3, 4));
-                    GameData gameData = service.fetchGameData(update.getCallbackQuery().getId());
+                    GameData gameData = service.fetchGameData(callData.substring(4));
                     log.info("user {}", update.getCallbackQuery().getFrom());
                     log.info("first user from db {}", gameData.getFirstUserId());
                     log.info("second user from db {}", gameData.getSecondUserId());
@@ -158,7 +159,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     } else {
                         if (!gameData.isMoveInProgress()) {
                             var markup = new InlineKeyboardMarkup()
-                                    .setKeyboard(getGameField(gameData, String.valueOf(order)));
+                                    .setKeyboard(getGameField(gameData, callData.substring(3)));
 
                             var message = new EditMessageText()
                                     .setInlineMessageId(id)

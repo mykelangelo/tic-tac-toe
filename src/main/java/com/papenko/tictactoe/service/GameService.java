@@ -151,13 +151,6 @@ public class GameService {
                     return true;
                 }
             }
-            if ((data.getC01() == data.getC11() && data.getC11() == data.getC21()) ||
-                    (data.getC10() == data.getC11() && data.getC11() == data.getC12())) {
-                if (!(data.getC00() != data.getC11() || data.getC20() != data.getC11() ||
-                        data.getC22() != data.getC11() || data.getC02() != data.getC11())) {
-                    return true;
-                }
-            }
         }
         return false;
     }
