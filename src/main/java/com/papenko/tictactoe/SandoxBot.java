@@ -69,6 +69,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
                 "92474297-44f58500-f1e4-11ea-915e-a8961ea92496.png");
 
+        log.info("@inline_query_id: {}", inlineQuery.getId());
         log.info("first user: {}", inlineQuery.getFrom());
         service.addFirstUser(gameData, inlineQuery.getFrom());
 
@@ -108,7 +109,9 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
                     var order = Integer.parseInt(callData.substring(3, 4));
-                    GameData gameData = service.fetchGameData(callData.substring(4));
+                    final String inlineQueryId = callData.substring(4);
+                    log.info("inline_query_id: {}", inlineQueryId);
+                    GameData gameData = service.fetchGameData(inlineQueryId);
                     log.info("user {}", update.getCallbackQuery().getFrom());
                     log.info("first user from db {}", gameData.getFirstUserId());
                     log.info("second user from db {}", gameData.getSecondUserId());
@@ -144,18 +147,18 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
-                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
-                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
-                        try {
-                            log.info("third user interrupts");
-                            execute(new AnswerCallbackQuery()
-                                    .setCallbackQueryId(update.getCallbackQuery().getId())
-                                    .setShowAlert(true).setText("✋"));
-                        } catch (TelegramApiException e) {
-                            log.error("could not execute (third user)", e);
-                        }
-                        return;
-                    }
+//                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
+//                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
+//                        try {
+//                            log.info("third user interrupts");
+//                            execute(new AnswerCallbackQuery()
+//                                    .setCallbackQueryId(update.getCallbackQuery().getId())
+//                                    .setShowAlert(true).setText("✋"));
+//                        } catch (TelegramApiException e) {
+//                            log.error("could not execute (third user)", e);
+//                        }
+//                        return;
+//                    }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
