@@ -176,7 +176,7 @@ public class GameService {
 
     public void addSecondUser(GameData gameData, User second) {
         gameData.setSecondUserId(second.getId());
-        gameData.setFirstUserName(second.getFirstName() + (second.getLastName() == null ? "" : second.getLastName()));
+        gameData.setSecondUserName(second.getFirstName() + (second.getLastName() == null ? "" : second.getLastName()));
         repository.save(gameData);
     }
 }
