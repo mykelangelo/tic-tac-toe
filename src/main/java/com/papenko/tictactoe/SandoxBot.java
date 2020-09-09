@@ -106,7 +106,6 @@ public class SandoxBot extends TelegramLongPollingBot {
                 String id = update.getCallbackQuery().getInlineMessageId();
                 String callData = update.getCallbackQuery().getData();
                 if (callData.startsWith("c")) {
-                    log.info("callData: {}", callData);
                     var order = Integer.parseInt(callData.substring(3, 4));
                     GameData gameData = service.fetchGameData(id);
                     log.info("user {}", update.getCallbackQuery().getFrom());
@@ -157,7 +156,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                         }
                     } else {
                         if (!gameData.isMoveInProgress()) {
-                            var markup = new InlineKeyboardMarkup().setKeyboard(getGameField(gameData));
+                            var markup = new InlineKeyboardMarkup()
+                                    .setKeyboard(getGameField(gameData, String.valueOf(order)));
 
                             var message = new EditMessageText()
                                     .setInlineMessageId(id)
@@ -221,7 +221,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         return cellState == CellState.O ? CellState.X.toString() : CellState.O.toString();
     }
 
-    private List<List<InlineKeyboardButton>> getGameField(GameData gameData) {
+    private static List<List<InlineKeyboardButton>> getGameField(GameData gameData) {
         var c00 = new InlineKeyboardButton().setText(gameData.getC00().toString()).setCallbackData("c00");
         var c01 = new InlineKeyboardButton().setText(gameData.getC01().toString()).setCallbackData("c01");
         var c02 = new InlineKeyboardButton().setText(gameData.getC02().toString()).setCallbackData("c02");
@@ -237,7 +237,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         return List.of(List.of(c00, c01, c02), List.of(c10, c11, c12), List.of(c20, c21, c22));
     }
 
-    private List<List<InlineKeyboardButton>> getGameField(GameData gameData, String order) {
+    private static List<List<InlineKeyboardButton>> getGameField(GameData gameData, String order) {
         var c00 = new InlineKeyboardButton().setText(gameData.getC00().toString()).setCallbackData("c00" + order);
         var c01 = new InlineKeyboardButton().setText(gameData.getC01().toString()).setCallbackData("c01" + order);
         var c02 = new InlineKeyboardButton().setText(gameData.getC02().toString()).setCallbackData("c02" + order);

@@ -48,15 +48,9 @@ public class GameData {
     public String toString() {
         return "{state=" + currentState +
                 ", id=" + id +
-                '\n' + c00 +
-                '|' + c01 +
-                '|' + c02 +
-                '\n' + c10 +
-                '|' + c11 +
-                '|' + c12 +
-                '\n' + c20 +
-                '|' + c21 +
-                '|' + c22 +
+                '\n' + c00 + c01 + c02 +
+                '\n' + c10 + c11 + c12 +
+                '\n' + c20 + c21 + c22 +
                 "\n}";
     }
 
