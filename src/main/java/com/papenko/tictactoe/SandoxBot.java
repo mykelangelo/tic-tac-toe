@@ -146,18 +146,18 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
-//                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
-//                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
-//                        try {
-//                            log.info("third user interrupts");
-//                            execute(new AnswerCallbackQuery()
-//                                    .setCallbackQueryId(update.getCallbackQuery().getId())
-//                                    .setShowAlert(true).setText("✋"));
-//                        } catch (TelegramApiException e) {
-//                            log.error("could not execute (third user)", e);
-//                        }
-//                        return;
-//                    }
+                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
+                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
+                        try {
+                            log.info("third user interrupts");
+                            execute(new AnswerCallbackQuery()
+                                    .setCallbackQueryId(update.getCallbackQuery().getId())
+                                    .setShowAlert(true).setText("✋"));
+                        } catch (TelegramApiException e) {
+                            log.error("could not execute (third user)", e);
+                        }
+                        return;
+                    }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
