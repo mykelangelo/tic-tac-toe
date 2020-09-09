@@ -52,7 +52,7 @@ public class SandoxBot extends TelegramLongPollingBot {
         article0.setId("0");
         final GameData gameData = service.fetchGameData(inlineQuery.getId());
         article0.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "1|" + inlineQuery.getFrom().getId())));
+                .setKeyboard(getGameField(gameData, "1")));
         article0.setTitle("Go first");
         article0.setDescription("Wanna go first? Click me!");
         article0.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -63,7 +63,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                 .setMessageText(inlineQuery.getFrom().getFirstName() + " goes second"));
         article1.setId("1");
         article1.setReplyMarkup(new InlineKeyboardMarkup()
-                .setKeyboard(getGameField(gameData, "2|" + inlineQuery.getFrom().getId())));
+                .setKeyboard(getGameField(gameData, "2")));
         article1.setTitle("Go second");
         article1.setDescription("Wanna go second? Click me!");
         article1.setThumbUrl("https://user-images.githubusercontent.com/46972880/" +
@@ -107,8 +107,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                     var order = Integer.parseInt(callData.substring(3, 4));
                     log.info("callData: {}", callData);
                     GameData data = service.fetchGameData(id);
-                    if (data.getFirstUserId() == null &&
-                            update.getCallbackQuery().getFrom().getId() == Integer.parseInt(callData.substring(5))) {
+                    if (data.getFirstUserId() == null) {
                         service.addFirstUser(data, update.getCallbackQuery().getFrom());
                     }
                     log.info("user {}", update.getCallbackQuery().getFrom());
