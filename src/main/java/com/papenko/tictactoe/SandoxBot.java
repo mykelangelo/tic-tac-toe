@@ -146,18 +146,18 @@ public class SandoxBot extends TelegramLongPollingBot {
                             }
                         }
                     }
-                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
-                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
-                        try {
-                            log.info("third user interrupts");
-                            execute(new AnswerCallbackQuery()
-                                    .setCallbackQueryId(update.getCallbackQuery().getId())
-                                    .setShowAlert(true).setText("✋"));
-                        } catch (TelegramApiException e) {
-                            log.error("could not execute (third user)", e);
-                        }
-                        return;
-                    }
+//                    if (!update.getCallbackQuery().getFrom().getId().equals(gameData.getFirstUserId()) &&
+//                            update.getCallbackQuery().getFrom().getId().equals(gameData.getSecondUserId())) {
+//                        try {
+//                            log.info("third user interrupts");
+//                            execute(new AnswerCallbackQuery()
+//                                    .setCallbackQueryId(update.getCallbackQuery().getId())
+//                                    .setShowAlert(true).setText("✋"));
+//                        } catch (TelegramApiException e) {
+//                            log.error("could not execute (third user)", e);
+//                        }
+//                        return;
+//                    }
                     var x = Integer.valueOf(callData.substring(1, 2));
                     var y = Integer.valueOf(callData.substring(2, 3));
                     if (service.makeMove(x, y, gameData)) {
@@ -167,7 +167,7 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 .setText((xMove ? gameData.getFirstUserName() : gameData.getSecondUserName())
                                         + " \uD83C\uDFC6, " +
                                         (xMove ? gameData.getSecondUserName() : gameData.getFirstUserName()) +
-                                                " \uD83D\uDE2D !\n" + gameData);
+                                        " \uD83D\uDE2D !\n" + gameData);
 
                         try {
                             execute(message);
@@ -181,7 +181,11 @@ public class SandoxBot extends TelegramLongPollingBot {
 
                             var message = new EditMessageText()
                                     .setInlineMessageId(id)
-                                    .setText(swapMessage(gameData.getCurrentState()))
+                                    .setText(gameData.getFirstUserName() +
+                                            '(' + (order == 1 ? CellState.X : CellState.O) + ')' +
+                                            " vs " + gameData.getSecondUserName() +
+                                            '(' + (order == 1 ? CellState.O : CellState.X) + ')' +
+                                            swapMessage(gameData.getCurrentState()))
                                     .setReplyMarkup(markup);
 
                             try {
