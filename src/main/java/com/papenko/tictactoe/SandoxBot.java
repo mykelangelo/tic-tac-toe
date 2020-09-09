@@ -125,14 +125,17 @@ public class SandoxBot extends TelegramLongPollingBot {
                                 } catch (TelegramApiException e) {
                                     log.error("could not execute (first user goes first, when he must be second)", e);
                                 }
+                                service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
                                 return;
                             } else {
+                                service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
                                 service.addSecondUser(data, update.getCallbackQuery().getFrom());
                             }
                         }
                     } else {
                         if (data.getSecondUserId() == null) {
                             if (!update.getCallbackQuery().getFrom().getId().equals(data.getFirstUserId())) {
+                                service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
                                 service.addSecondUser(data, update.getCallbackQuery().getFrom());
                             }
                         }
@@ -147,6 +150,8 @@ public class SandoxBot extends TelegramLongPollingBot {
                         } catch (TelegramApiException e) {
                             log.error("could not execute (third user)", e);
                         }
+                        service.addFirstUser(data, data.getFirstUserId(), data.getFirstUserName(), null);
+                        service.addSecondUser(data, data.getSecondUserId(), data.getSecondUserName(), null);
                         return;
                     }
                     if (order == 1) {
